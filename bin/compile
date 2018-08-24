@@ -1,7 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
-set -o pipefail
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
 
 BUILD_DIR=$1
 CACHE_DIR=$2
@@ -18,9 +25,9 @@ if [ ! -d ~/.ssh ]; then
   chmod 700 ~/.ssh
 fi
 
-cp $ENV_DIR/GIT_DEPLOY_KEY ~/.ssh/deploy_key
+cat $ENV_DIR/GIT_DEPLOY_KEY | base64 --decode > ~/.ssh/deploy_key
 chmod 400 ~/.ssh/deploy_key
-echo "Host github.com\n"\
+echo -e "Host github.com\n"\
     " IdentityFile ~/.ssh/deploy_key\n"\
     " IdentitiesOnly yes\n"\
     " UserKnownHostsFile=/dev/null\n"\
@@ -35,12 +42,15 @@ rm -rf $INSTANCE_DIR
 mkdir -p $INSTANCE_DIR
 
 echo "-----> moving instance repo to instance dir"
-mv -r $BUILD_DIR/* $INSTANCE_DIR
+cd $BUILD_DIR
+ls | grep -v $APP_INSTANCE | xargs mv -t $APP_INSTANCE 2>&1 | indent
+cd -
+
 echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
-git clone -b $APP_BRANCH --single-branch --no-tags $GIT_URL $BUILD_DIR/app.tmp
-echo "       done clonning"
+git clone -b $APP_BRANCH --single-branch $GIT_URL $BUILD_DIR/app.tmp 2>&1 | indent
+echo "done clonning" | indent
 rm -rf $BUILD_DIR/app.tmp/$APP_INSTANCE
-mv $BUILD_DIR/app.tmp/* $BUILD_DIR/
+mv $BUILD_DIR/app.tmp/* $BUILD_DIR
 rm -rf $BUILD_DIR/app.tmp
 rm -rf $BUILD_DIR/.git
 echo "-----> merged two repos"
