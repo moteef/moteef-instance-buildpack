@@ -14,9 +14,9 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-APP_BRANCH=`cat $BUILD_DIR/.moteef_branch`
-APP_INSTANCE=`cat $ENV_DIR/APP_INSTANCE`
-GIT_URL=`cat $ENV_DIR/MOTEEF_REPO_URL`
+APP_BRANCH=$(cat $BUILD_DIR/.moteef_branch)
+APP_INSTANCE=$(cat $ENV_DIR/APP_INSTANCE)
+GIT_URL=$(cat $ENV_DIR/MOTEEF_REPO_URL)
 rm $BUILD_DIR/.moteef_branch
 
 echo "-----> installing deploy key"
@@ -50,7 +50,9 @@ echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
 git clone -b $APP_BRANCH --single-branch $GIT_URL $BUILD_DIR/app.tmp 2>&1 | indent
 echo "done clonning" | indent
 rm -rf $BUILD_DIR/app.tmp/$APP_INSTANCE
+shopt -s dotglob
 mv $BUILD_DIR/app.tmp/* $BUILD_DIR
+shopt -u dotglob
 rm -rf $BUILD_DIR/app.tmp
 rm -rf $BUILD_DIR/.git
 echo "-----> merged two repos"
