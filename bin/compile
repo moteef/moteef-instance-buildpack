@@ -1,0 +1,44 @@
+#!/bin/sh
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+APP_BRANCH=`cat $BUILD_DIR/.moteef_branch`
+APP_INSTANCE=`cat $ENV_DIR/APP_INSTANCE`
+GIT_URL=`cat $ENV_DIR/MOTEEF_REPO_URL`
+rm $BUILD_DIR/.moteef_branch
+
+echo "-----> installing deploy key"
+if [ ! -d ~/.ssh ]; then
+  mkdir -p ~/.ssh
+  chmod 700 ~/.ssh
+fi
+
+cp $ENV_DIR/GIT_DEPLOY_KEY ~/.ssh/deploy_key
+chmod 400 ~/.ssh/deploy_key
+echo "Host github.com\n"\
+    " IdentityFile ~/.ssh/deploy_key\n"\
+    " IdentitiesOnly yes\n"\
+    " UserKnownHostsFile=/dev/null\n"\
+    " StrictHostKeyChecking no"\
+    > ~/.ssh/config
+
+echo "-----> ssh key installed"
+
+INSTANCE_DIR=$BUILD_DIR/$APP_INSTANCE
+
+rm -rf $INSTANCE_DIR
+mkdir -p $INSTANCE_DIR
+
+echo "-----> moving instance repo to instance dir"
+mv -r $BUILD_DIR/* $INSTANCE_DIR
+echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
+git clone -b $APP_BRANCH --single-branch --no-tags $GIT_URL $BUILD_DIR/app.tmp
+echo "       done clonning"
+rm -rf $BUILD_DIR/app.tmp/$APP_INSTANCE
+mv $BUILD_DIR/app.tmp/* $BUILD_DIR/
+rm -rf $BUILD_DIR/app.tmp
+rm -rf $BUILD_DIR/.git
+echo "-----> merged two repos"
+
