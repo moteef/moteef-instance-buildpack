@@ -57,3 +57,12 @@ rm -rf $BUILD_DIR/app.tmp
 rm -rf $BUILD_DIR/.git
 echo "-----> merged two repos"
 
+INSTANCE_PUBLIC_DIR=$INSTANCE_DIR/public
+PUBLIC_DIR=$BUILD_DIR/public
+
+if [ -d "$INSTANCE_PUBLIC_DIR" ]; then
+  echo "-----> copying files from public folder"
+  cp -v -r $INSTANCE_PUBLIC_DIR/* $PUBLIC_DIR 2>&1 | indent
+  echo "-----> done copying files from public folder"
+fi
+
