@@ -46,6 +46,12 @@ cd $BUILD_DIR
 ls | grep -v $APP_INSTANCE | xargs mv -t $APP_INSTANCE 2>&1 | indent
 cd -
 
+BUILD_RSPEC_FILE=$BUILD_DIR/.rspec
+if [ -e "$BUILD_RSPEC_FILE" ]; then
+  echo "-----> moving instance rspec file to instance dir"
+  cp -rf $BUILD_RSPEC_FILE $INSTANCE_DIR 2>&1 | indent
+fi
+
 echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
 git clone -b $APP_BRANCH --single-branch $GIT_URL $BUILD_DIR/app.tmp 2>&1 | indent
 echo "done clonning" | indent
@@ -66,3 +72,9 @@ if [ -d "$INSTANCE_PUBLIC_DIR" ]; then
   echo "-----> done copying files from public folder"
 fi
 
+INSTANCE_RSPEC_FILE=$INSTANCE_DIR/.rspec
+if [ -e "$INSTANCE_RSPEC_FILE" ]; then
+  echo "-----> copying rpec file"
+  cp -rf $INSTANCE_RSPEC_FILE $BUILD_DIR 2>&1 | indent
+  echo "-----> done copying rpec file"
+fi
