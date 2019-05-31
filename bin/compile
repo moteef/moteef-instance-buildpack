@@ -49,7 +49,7 @@ cd -
 BUILD_RSPEC_FILE=$BUILD_DIR/.rspec
 if [ -e "$BUILD_RSPEC_FILE" ]; then
   echo "-----> moving instance rspec file to instance dir"
-  cp -rf $BUILD_RSPEC_FILE $INSTANCE_DIR 2>&1 | indent
+  cp -f $BUILD_RSPEC_FILE $INSTANCE_DIR 2>&1 | indent
 fi
 
 echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
@@ -75,6 +75,6 @@ fi
 INSTANCE_RSPEC_FILE=$INSTANCE_DIR/.rspec
 if [ -e "$INSTANCE_RSPEC_FILE" ]; then
   echo "-----> copying rpec file"
-  cp -rf $INSTANCE_RSPEC_FILE $BUILD_DIR 2>&1 | indent
+  cp -f $INSTANCE_RSPEC_FILE $BUILD_DIR 2>&1 | indent
   echo "-----> done copying rpec file"
 fi
