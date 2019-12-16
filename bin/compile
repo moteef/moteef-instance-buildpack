@@ -56,6 +56,7 @@ echo "-----> cloning Moteef app repo branch: $APP_BRANCH"
 git clone -b $APP_BRANCH --single-branch $GIT_URL $BUILD_DIR/app.tmp 2>&1 | indent
 echo "done clonning" | indent
 rm -rf $BUILD_DIR/app.tmp/$APP_INSTANCE
+rm -rf $BUILD_DIR/app.tmp/.github
 shopt -s dotglob
 mv $BUILD_DIR/app.tmp/* $BUILD_DIR
 shopt -u dotglob
